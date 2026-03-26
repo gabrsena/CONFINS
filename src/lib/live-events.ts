@@ -321,7 +321,7 @@ async function fetchReliefWebEvents(): Promise<LiveEvent[]> {
           report.fields.date?.created ||
           report.fields.date?.original ||
           new Date().toISOString(),
-      } satisfies LiveEvent;
+      } as LiveEvent;
     })
     .filter((event): event is LiveEvent => Boolean(event));
 }
@@ -431,7 +431,7 @@ async function fetchNewsApiEvents(): Promise<LiveEvent[]> {
         confidence: "SINAL",
         source: normalizeHeadline(article.source?.name ?? "NEWSAPI"),
         updatedAt: article.publishedAt ?? new Date().toISOString(),
-      } satisfies LiveEvent;
+      } as LiveEvent;
     });
 }
 
@@ -470,7 +470,7 @@ async function fetchRssFeedEvents(feedUrl: string, sourceLabel: string): Promise
       confidence: "SINAL",
       source: sourceLabel,
       updatedAt: item.pubDate ?? new Date().toISOString(),
-    } satisfies LiveEvent;
+    } as LiveEvent;
   });
 }
 
