@@ -201,4 +201,11 @@ export class ThreeLayer {
       }
     }
   }
+
+  updateVisibility(visible: boolean) {
+    this.bases.forEach(group => {
+      group.visible = visible;
+    });
+    if (this.map) this.map.triggerRepaint();
+  }
 }

@@ -13,6 +13,13 @@ interface MapProps {
   showZoomBar?: boolean;
   zoom?: MotionValue<number>;
   events: LiveEvent[];
+  activeLayers?: {
+    missionaries: boolean;
+    bases: boolean;
+    persecuted: boolean;
+    conflicts: boolean;
+    disasters: boolean;
+  };
 }
 
 export interface Missionary {
@@ -255,7 +262,14 @@ function ZoomBar({ onSearch }: { onSearch: (m: Missionary) => void }) {
   );
 }
 
-function MapboxMap({ onInteractionStart, onInteractionEnd, showZoomBar, zoom: scrollZoom, events }: MapProps) {
+function MapboxMap({ 
+  onInteractionStart, 
+  onInteractionEnd, 
+  showZoomBar, 
+  zoom: scrollZoom, 
+  events,
+  activeLayers 
+}: MapProps) {
   const [selectedMissionary, setSelectedMissionary] = useState<(Missionary & { image?: string }) | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [showGlobe, setShowGlobe] = useState(false);
@@ -329,6 +343,12 @@ function MapboxMap({ onInteractionStart, onInteractionEnd, showZoomBar, zoom: sc
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (threeLayerRef.current) {
+      threeLayerRef.current.updateVisibility(activeLayers?.bases !== false);
+    }
+  }, [activeLayers?.bases]);
 
   // Auto-rotation logic
   useEffect(() => {
@@ -624,7 +644,12 @@ function MapboxMap({ onInteractionStart, onInteractionEnd, showZoomBar, zoom: sc
           )}
         </AnimatePresence>
 
-        {LOCATIONS.filter((m) => m.type !== 'BASE' && isPointOnVisibleHemisphere(m.coords)).map(m => (
+        {LOCATIONS.filter((m) => {
+          if (!isPointOnVisibleHemisphere(m.coords)) return false;
+          if (m.type === 'MISSIONARY' && activeLayers && !activeLayers.missionaries) return false;
+          if (m.type === 'BASE' && activeLayers && !activeLayers.bases) return false;
+          return true;
+        }).map(m => (
           <Marker 
             key={m.id} 
             longitude={m.coords[0]} 
@@ -639,7 +664,15 @@ function MapboxMap({ onInteractionStart, onInteractionEnd, showZoomBar, zoom: sc
         ))}
 
         {/* Tactical Alert Signals */}
-        {events.filter((s) => isPointOnVisibleHemisphere(s.coords)).map((s) => (
+        {events.filter((s) => {
+          if (!isPointOnVisibleHemisphere(s.coords)) return false;
+          if (activeLayers) {
+            if (s.category === 'CONFLITO' && !activeLayers.conflicts) return false;
+            if (s.category === 'DESASTRE' && !activeLayers.disasters) return false;
+            if (s.category === 'PERSEGUICAO' && !activeLayers.persecuted) return false;
+          }
+          return true;
+        }).map((s) => (
           <Marker
             key={s.id}
             longitude={s.coords[0]}
@@ -773,7 +806,8 @@ function areMapPropsEqual(prev: MapProps, next: MapProps) {
   return (
     prev.events === next.events &&
     prev.showZoomBar === next.showZoomBar &&
-    prev.zoom === next.zoom
+    prev.zoom === next.zoom &&
+    prev.activeLayers === next.activeLayers
   );
 }
 
