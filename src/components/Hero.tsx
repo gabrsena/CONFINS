@@ -139,13 +139,13 @@ export default function Hero({ scrollProgress, events }: HeroProps) {
             className="leading-[0.8] drop-shadow-2xl inline-block relative"
           >
             <span 
-              className="block text-[80px] md:text-[110px] text-rust lowercase mb-[-18px] ml-[-10px] relative z-10 [text-shadow:0_0_14px_rgba(232,184,0,0.28)] -translate-y-[50%]"
+              className="block text-[80px] md:text-[110px] text-rust lowercase mb-[-18px] ml-[-10px] relative z-10 [text-shadow:0_0_14px_rgba(232,184,0,0.28)] -translate-y-[50%] translate-x-[25%]"
               style={{ fontFamily: 'var(--font-next-script), cursive' }}
             >
               Até os
             </span>
             <span 
-              className="block font-heading text-[100px] md:text-[140px] lg:text-[180px] uppercase text-transparent"
+              className="block font-heading text-[100px] md:text-[140px] lg:text-[180px] uppercase text-transparent -translate-x-[25%]"
               style={{ fontKerning: 'none', fontVariantLigatures: 'none', letterSpacing: '-0.03em', textRendering: 'geometricPrecision' }}
             >
               CONFINS

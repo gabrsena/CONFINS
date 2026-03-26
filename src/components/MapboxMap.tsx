@@ -412,7 +412,7 @@ function MapboxMap({ onInteractionStart, onInteractionEnd, showZoomBar, zoom: sc
         initial={{ opacity: 0, y: 22, filter: "blur(8px)" }}
         animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
         transition={{ delay: 0.52, duration: 1.2, ease: "easeOut" }}
-        className="pointer-events-none absolute left-[12%] top-[25.5%] z-[2]"
+        className="pointer-events-none absolute left-[12%] top-[25.5%] z-[2] -translate-x-[25%]"
       >
         <span 
           className="absolute inset-0 block font-heading text-[100px] md:text-[140px] lg:text-[180px] uppercase text-[#f2cc9d]/10 blur-[8px] translate-x-[2px] translate-y-[-2px]"
