@@ -414,10 +414,16 @@ function MapboxMap({ onInteractionStart, onInteractionEnd, showZoomBar, zoom: sc
         transition={{ delay: 0.52, duration: 1.2, ease: "easeOut" }}
         className="pointer-events-none absolute left-[12%] top-[25.5%] z-[2]"
       >
-        <span className="absolute inset-0 block font-heading text-[100px] md:text-[140px] lg:text-[180px] uppercase tracking-[-0.035em] text-[#f2cc9d]/10 blur-[8px] translate-x-[2px] translate-y-[-2px]">
+        <span 
+          className="absolute inset-0 block font-heading text-[100px] md:text-[140px] lg:text-[180px] uppercase text-[#f2cc9d]/10 blur-[8px] translate-x-[2px] translate-y-[-2px]"
+          style={{ fontKerning: 'none', fontVariantLigatures: 'none', letterSpacing: '0.06em' }}
+        >
           CONFINS
         </span>
-        <span className="block font-heading text-[100px] md:text-[140px] lg:text-[180px] uppercase tracking-[-0.035em] text-[#f5e8d3] [text-shadow:0_10px_35px_rgba(0,0,0,0.38),0_0_20px_rgba(255,245,210,0.08)]">
+        <span 
+          className="block font-heading text-[100px] md:text-[140px] lg:text-[180px] uppercase text-[#f5e8d3] [text-shadow:0_10px_35px_rgba(0,0,0,0.38),0_0_20px_rgba(255,245,210,0.08)]"
+          style={{ fontKerning: 'none', fontVariantLigatures: 'none', letterSpacing: '0.06em' }}
+        >
           CONFINS
         </span>
         <span className="absolute left-[1%] top-[56%] h-px w-[88%] bg-gradient-to-r from-transparent via-rust/40 to-transparent opacity-70" />

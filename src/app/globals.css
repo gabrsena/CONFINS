@@ -44,6 +44,19 @@ body {
   animation: map-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* Glitch Animation for Text */
+@keyframes glitch-loop {
+  0%, 98% { transform: translateX(0); }
+  98.5% { transform: translateX(2px); }
+  99% { transform: translateX(-2px); }
+  99.5% { transform: translateX(2px); }
+  100% { transform: translateX(0); }
+}
+
+.animate-glitch-loop {
+  animation: glitch-loop 4s infinite;
+}
+
 /* Shooting Star Animation */
 @keyframes shooting-star {
   0% { transform: translate(0, 0) scaleX(0); opacity: 0; }
