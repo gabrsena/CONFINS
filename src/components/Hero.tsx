@@ -13,9 +13,16 @@ const MapboxMap = dynamic(() => import("@/components/MapboxMap"), {
 interface HeroProps {
   scrollProgress: MotionValue<number>;
   events: LiveEvent[];
+  activeLayers?: {
+    missionaries: boolean;
+    bases: boolean;
+    persecuted: boolean;
+    conflicts: boolean;
+    disasters: boolean;
+  };
 }
 
-export default function Hero({ scrollProgress, events }: HeroProps) {
+export default function Hero({ scrollProgress, events, activeLayers }: HeroProps) {
   const [isHeroForced, setIsHeroForced] = useState(false);
   const timerRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
 
@@ -99,6 +106,7 @@ export default function Hero({ scrollProgress, events }: HeroProps) {
       {/* Background Interactive Map */}
       <MapboxMap 
         events={events}
+        activeLayers={activeLayers}
         zoom={mapZoom}
         onInteractionStart={() => {
           resetInactivityTimer();
@@ -139,13 +147,13 @@ export default function Hero({ scrollProgress, events }: HeroProps) {
             className="leading-[0.8] drop-shadow-2xl inline-block relative"
           >
             <span 
-              className="block text-[80px] md:text-[110px] text-rust lowercase mb-[-18px] ml-[-10px] relative z-10 [text-shadow:0_0_14px_rgba(232,184,0,0.28)] -translate-y-[50%] translate-x-[25%]"
+              className="absolute -top-[0.26em] left-0 text-[80px] md:text-[110px] text-rust lowercase z-10 [text-shadow:0_0_14px_rgba(232,184,0,0.28)]"
               style={{ fontFamily: 'var(--font-next-script), cursive' }}
             >
               Até os
             </span>
             <span 
-              className="block font-heading text-[100px] md:text-[140px] lg:text-[180px] uppercase text-transparent -translate-x-[25%]"
+              className="block font-heading text-[100px] md:text-[140px] lg:text-[180px] uppercase text-transparent relative z-0"
               style={{ fontKerning: 'none', fontVariantLigatures: 'none', letterSpacing: '-0.03em', textRendering: 'geometricPrecision' }}
             >
               CONFINS

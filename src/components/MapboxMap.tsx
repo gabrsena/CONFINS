@@ -5,6 +5,7 @@ import Map, { Marker, useMap, MapRef } from 'react-map-gl/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { motion, AnimatePresence, MotionValue, useMotionValueEvent, useMotionValue } from 'framer-motion';
 import type { LiveEvent } from '@/lib/live-events';
+import { ThreeLayer } from './ThreeLayer';
 
 interface MapProps {
   onInteractionStart?: () => void;
@@ -14,7 +15,7 @@ interface MapProps {
   events: LiveEvent[];
 }
 
-interface Missionary {
+export interface Missionary {
   id: string;
   name: string;
   type: 'MISSIONARY' | 'BASE';
@@ -35,14 +36,14 @@ interface GlobeView {
   latitude: number;
 }
 
-const SATELLITE_MAP_STYLE: any = {
+const SATELLITE_MAP_STYLE = {
   version: 8,
   sources: {
     satellite: {
       type: 'raster',
       tiles: [
         'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-      ],
+      ] as string[],
       tileSize: 256,
       attribution: 'Esri, Maxar'
     }
@@ -56,7 +57,7 @@ const SATELLITE_MAP_STYLE: any = {
       maxzoom: 20
     }
   ]
-};
+} as const;
 
 const LOCATIONS: Missionary[] = [
   // Missionaries
@@ -264,8 +265,14 @@ function MapboxMap({ onInteractionStart, onInteractionEnd, showZoomBar, zoom: sc
     latitude: 31.0461,
   });
   const mapRef = useRef<MapRef>(null);
+  const threeLayerRef = useRef<ThreeLayer | null>(null);
   const defaultZoom = useMotionValue(2.5);
   const interactionResetRef = useRef<number | null>(null);
+  const dragStateRef = useRef<{
+    startX: number;
+    startY: number;
+    center: { lng: number; lat: number };
+  } | null>(null);
 
   const [userInteracting, setUserInteracting] = useState(false);
   const requestRef = useRef<number | null>(null);
@@ -369,6 +376,48 @@ function MapboxMap({ onInteractionStart, onInteractionEnd, showZoomBar, zoom: sc
   return (
     <div 
       className="absolute inset-0 z-0 overflow-hidden bg-black"
+      onMouseDown={(event) => {
+        if (!showZoomBar) return;
+        if ((event.target as HTMLElement).closest("[data-search-bar='true']")) return;
+
+        const map = mapRef.current?.getMap();
+        if (!map) return;
+
+        const center = map.getCenter();
+        dragStateRef.current = {
+          startX: event.clientX,
+          startY: event.clientY,
+          center: { lng: center.lng, lat: center.lat },
+        };
+
+        setUserInteracting(true);
+        onInteractionStart?.();
+      }}
+      onMouseMove={(event) => {
+        if (!showZoomBar || !dragStateRef.current) return;
+
+        const map = mapRef.current?.getMap();
+        if (!map) return;
+
+        const { startX, startY, center } = dragStateRef.current;
+        const centerPoint = map.project([center.lng, center.lat]);
+        const dx = event.clientX - startX;
+        const dy = event.clientY - startY;
+        const nextCenter = map.unproject([centerPoint.x - dx, centerPoint.y - dy]);
+        map.setCenter(nextCenter);
+      }}
+      onMouseUp={() => {
+        if (!dragStateRef.current) return;
+        dragStateRef.current = null;
+        setUserInteracting(false);
+        onInteractionEnd?.();
+      }}
+      onMouseLeave={() => {
+        if (!dragStateRef.current) return;
+        dragStateRef.current = null;
+        setUserInteracting(false);
+        onInteractionEnd?.();
+      }}
       onWheelCapture={(event) => {
         if (!showZoomBar || !showGlobe) return;
 
@@ -410,23 +459,29 @@ function MapboxMap({ onInteractionStart, onInteractionEnd, showZoomBar, zoom: sc
 
       <motion.div
         initial={{ opacity: 0, y: 22, filter: "blur(8px)" }}
-        animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-        transition={{ delay: 0.52, duration: 1.2, ease: "easeOut" }}
-        className="pointer-events-none absolute left-[12%] top-[25.5%] z-[2] -translate-x-[25%]"
+        animate={{
+          opacity: showZoomBar ? 0 : 1,
+          y: showZoomBar ? -10 : 0,
+          filter: showZoomBar ? "blur(10px)" : "blur(0px)",
+        }}
+        transition={{ delay: showZoomBar ? 0 : 0.52, duration: 0.7, ease: "easeOut" }}
+        className="pointer-events-none absolute inset-0 z-[2] max-w-[1400px] w-full mx-auto px-8 lg:px-16 flex flex-col justify-end pb-[42vh]"
       >
-        <span 
-          className="absolute inset-0 block font-heading text-[100px] md:text-[140px] lg:text-[180px] uppercase text-[#f2cc9d]/10 blur-[8px] translate-x-[2px] translate-y-[-2px]"
-          style={{ fontKerning: 'none', fontVariantLigatures: 'none', letterSpacing: '-0.03em', textRendering: 'geometricPrecision' }}
-        >
-          CONFINS
-        </span>
-        <span 
-          className="block font-heading text-[100px] md:text-[140px] lg:text-[180px] uppercase text-[#f5e8d3] [text-shadow:0_10px_35px_rgba(0,0,0,0.38),0_0_20px_rgba(255,245,210,0.08)]"
-          style={{ fontKerning: 'none', fontVariantLigatures: 'none', letterSpacing: '-0.03em', textRendering: 'geometricPrecision' }}
-        >
-          CONFINS
-        </span>
-        <span className="absolute left-[1%] top-[56%] h-px w-[88%] bg-gradient-to-r from-transparent via-rust/40 to-transparent opacity-70" />
+        <div className="mb-8 max-w-[1000px] relative">
+          <span 
+            className="absolute inset-0 block font-heading text-[100px] md:text-[140px] lg:text-[180px] uppercase text-[#f2cc9d]/10 blur-[8px] translate-x-[2px] translate-y-[-2px]"
+            style={{ fontKerning: 'none', fontVariantLigatures: 'none', letterSpacing: '-0.03em', textRendering: 'geometricPrecision' }}
+          >
+            CONFINS
+          </span>
+          <span 
+            className="block font-heading text-[100px] md:text-[140px] lg:text-[180px] uppercase text-[#f5e8d3] [text-shadow:0_10px_35px_rgba(0,0,0,0.38),0_0_20px_rgba(255,245,210,0.08)]"
+            style={{ fontKerning: 'none', fontVariantLigatures: 'none', letterSpacing: '-0.03em', textRendering: 'geometricPrecision' }}
+          >
+            CONFINS
+          </span>
+          <span className="absolute left-[1%] top-[56%] h-px w-[88%] bg-gradient-to-r from-transparent via-rust/40 to-transparent opacity-70" />
+        </div>
       </motion.div>
 
       <Map
@@ -446,6 +501,18 @@ function MapboxMap({ onInteractionStart, onInteractionEnd, showZoomBar, zoom: sc
               'space-color': '#000000',
               'star-intensity': 0.15
             });
+          }
+
+          // Add Three.js Layer for Bases
+          if (!threeLayerRef.current) {
+            threeLayerRef.current = new ThreeLayer(
+              LOCATIONS,
+              (base) => setSelectedMissionary(base),
+              (base) => {
+                // We can handle hover-specific UI here if needed
+              }
+            );
+            map.addLayer(threeLayerRef.current as any);
           }
 
           // Tactical Label Dimming - Dim all labels to 0.2 opacity
@@ -481,8 +548,8 @@ function MapboxMap({ onInteractionStart, onInteractionEnd, showZoomBar, zoom: sc
         minZoom={2}
         maxZoom={15}
         scrollZoom={false}
-        dragPan={true}
-        dragRotate={true}
+        dragPan={false}
+        dragRotate={false}
         doubleClickZoom={true}
         touchZoomRotate={true}
         keyboard={true}
@@ -522,8 +589,18 @@ function MapboxMap({ onInteractionStart, onInteractionEnd, showZoomBar, zoom: sc
           position: 'relative',
           zIndex: 5
         }}
-        mapStyle={SATELLITE_MAP_STYLE}
+        mapStyle={SATELLITE_MAP_STYLE as any}
         attributionControl={false}
+        onMouseMove={(e) => {
+          if (threeLayerRef.current) {
+            threeLayerRef.current.onMouseAction(e as any, 'mousemove');
+          }
+        }}
+        onClick={(e) => {
+          if (threeLayerRef.current) {
+            threeLayerRef.current.onMouseAction(e as any, 'click');
+          }
+        }}
       >
         <AnimatePresence>
           {showZoomBar && (
@@ -540,13 +617,14 @@ function MapboxMap({ onInteractionStart, onInteractionEnd, showZoomBar, zoom: sc
               exit={{ opacity: 0, y: 20 }}
               transition={{ duration: 0.3 }}
               className="absolute bottom-24 left-1/2 z-50 cursor-move pointer-events-auto"
+              data-search-bar="true"
             >
               <ZoomBar onSearch={setSelectedMissionary} />
             </motion.div>
           )}
         </AnimatePresence>
 
-        {LOCATIONS.filter((m) => isPointOnVisibleHemisphere(m.coords)).map(m => (
+        {LOCATIONS.filter((m) => m.type !== 'BASE' && isPointOnVisibleHemisphere(m.coords)).map(m => (
           <Marker 
             key={m.id} 
             longitude={m.coords[0]} 
@@ -556,17 +634,7 @@ function MapboxMap({ onInteractionStart, onInteractionEnd, showZoomBar, zoom: sc
               setSelectedMissionary(m);
             }}
           >
-            {m.type === 'BASE' ? (
-              <div className="relative flex items-center justify-center">
-                <div className="w-[24px] h-[24px] rounded-full bg-[#22C55E]/30 absolute animate-ping" />
-                <div className="w-[12px] h-[12px] rounded-full bg-[#22C55E] border-2 border-paper cursor-pointer shadow-lg" />
-                <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap font-mono text-[9px] uppercase tracking-[1px] text-[#22C55E] font-bold bg-paper/80 px-1">
-                  {m.name}
-                </span>
-              </div>
-            ) : (
-              <div className="w-[10px] h-[10px] rounded-full bg-[#FACC15] cursor-pointer shadow-[0_0_15px_rgba(250,204,21,0.5)] marker-war-pulse" />
-            )}
+            <div className="w-[10px] h-[10px] rounded-full bg-[#FACC15] cursor-pointer shadow-[0_0_15px_rgba(250,204,21,0.5)] marker-war-pulse" />
           </Marker>
         ))}
 

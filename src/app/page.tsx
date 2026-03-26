@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useScroll } from "framer-motion";
+import { useMotionValueEvent, useScroll } from "framer-motion";
+import CategoryDock, { type LayerKey } from "@/components/CategoryDock";
 import Hero from "@/components/Hero";
+import LiveNewsPanel from "@/components/LiveNewsPanel";
 import type { LiveEvent } from "@/lib/live-events";
 
 function areEventsEqual(prev: LiveEvent[], next: LiveEvent[]) {
@@ -21,10 +23,22 @@ function areEventsEqual(prev: LiveEvent[], next: LiveEvent[]) {
 export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [events, setEvents] = useState<LiveEvent[]>([]);
+  const [showOperationsUi, setShowOperationsUi] = useState(false);
+  const [activeLayers, setActiveLayers] = useState<Record<LayerKey, boolean>>({
+    missionaries: true,
+    bases: true,
+    persecuted: true,
+    conflicts: false,
+    disasters: false,
+  });
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
+  });
+
+  useMotionValueEvent(scrollYProgress, "change", (latest) => {
+    setShowOperationsUi(latest > 0.01);
   });
 
   useEffect(() => {
@@ -64,10 +78,27 @@ export default function Home() {
     };
   }, []);
 
+  const toggleLayer = (key: LayerKey) => {
+    setActiveLayers((current) => ({
+      ...current,
+      [key]: !current[key],
+    }));
+  };
+
   return (
     <main ref={containerRef} className="relative bg-paper h-[220vh]">
       <div className="sticky top-0 h-screen w-full overflow-hidden">
-        <Hero scrollProgress={scrollYProgress} events={events} />
+        <Hero
+          scrollProgress={scrollYProgress}
+          events={events}
+          activeLayers={activeLayers}
+        />
+        <CategoryDock
+          active={activeLayers}
+          visible={showOperationsUi}
+          onToggle={toggleLayer}
+        />
+        <LiveNewsPanel events={events} visible={showOperationsUi} />
       </div>
     </main>
   );
