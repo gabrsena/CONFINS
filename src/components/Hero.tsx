@@ -139,7 +139,7 @@ export default function Hero({ scrollProgress, events }: HeroProps) {
             className="leading-[0.8] drop-shadow-2xl inline-block relative"
           >
             <span 
-              className="block text-[80px] md:text-[110px] text-rust lowercase mb-[-18px] ml-[-10px] relative z-10 [text-shadow:0_0_14px_rgba(232,184,0,0.28)] -translate-y-[35%]"
+              className="block text-[80px] md:text-[110px] text-rust lowercase mb-[-18px] ml-[-10px] relative z-10 [text-shadow:0_0_14px_rgba(232,184,0,0.28)] -translate-y-[50%]"
               style={{ fontFamily: 'var(--font-next-script), cursive' }}
             >
               Até os
