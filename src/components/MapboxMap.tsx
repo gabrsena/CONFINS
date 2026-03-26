@@ -35,7 +35,7 @@ interface GlobeView {
   latitude: number;
 }
 
-const SATELLITE_MAP_STYLE = {
+const SATELLITE_MAP_STYLE: any = {
   version: 8,
   sources: {
     satellite: {
@@ -56,7 +56,7 @@ const SATELLITE_MAP_STYLE = {
       maxzoom: 20
     }
   ]
-} as const;
+};
 
 const LOCATIONS: Missionary[] = [
   // Missionaries
@@ -463,8 +463,8 @@ function MapboxMap({ onInteractionStart, onInteractionEnd, showZoomBar, zoom: sc
           }
         }}
         onMove={(event) => {
-          const { lng, lat } = event.viewState;
-          setGlobeView({ longitude: lng, latitude: lat });
+          const { longitude, latitude } = event.viewState;
+          setGlobeView({ longitude, latitude });
         }}
         initialViewState={{
           longitude: 34.8516,
