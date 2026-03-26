@@ -139,14 +139,14 @@ export default function Hero({ scrollProgress, events }: HeroProps) {
             className="leading-[0.8] drop-shadow-2xl inline-block relative"
           >
             <span 
-              className="block text-[80px] md:text-[110px] text-rust lowercase mb-[-18px] ml-[-10px] relative z-10 [text-shadow:0_0_14px_rgba(232,184,0,0.28)] -translate-y-[20%]"
+              className="block text-[80px] md:text-[110px] text-rust lowercase mb-[-18px] ml-[-10px] relative z-10 [text-shadow:0_0_14px_rgba(232,184,0,0.28)] -translate-y-[35%]"
               style={{ fontFamily: 'var(--font-next-script), cursive' }}
             >
               Até os
             </span>
             <span 
               className="block font-heading text-[100px] md:text-[140px] lg:text-[180px] uppercase text-transparent"
-              style={{ fontKerning: 'none', fontVariantLigatures: 'none', letterSpacing: '0.06em' }}
+              style={{ fontKerning: 'none', fontVariantLigatures: 'none', letterSpacing: '-0.03em', textRendering: 'geometricPrecision' }}
             >
               CONFINS
             </span>
@@ -159,16 +159,9 @@ export default function Hero({ scrollProgress, events }: HeroProps) {
             transition={{ delay: 1.8, duration: 1.2, ease: "easeOut" }}
             className="absolute top-[45%] -translate-y-1/2 right-[-32px] lg:right-[-68px] hidden md:block"
           >
-            <div className="flex items-center gap-4 animate-glitch-loop">
-              <div className="h-px w-8 lg:w-16 bg-[#E4B504]" />
-              <span 
-                className="font-mono text-[17px] text-[#E4B504] uppercase whitespace-nowrap [text-shadow:0_0_12px_rgba(228,181,4,0.4)]"
-                style={{ letterSpacing: '0.4em' }}
-              >
-                [ ATOS 1:8 ]
-              </span>
-              <div className="h-px w-8 lg:w-16 bg-[#E4B504]" />
-            </div>
+            <span className="font-mono text-[17px] tracking-[0.35em] text-rust/80 uppercase whitespace-nowrap py-2 [text-shadow:0_0_12px_rgba(232,184,0,0.22)]">
+              ATOS 1:8
+            </span>
           </motion.div>
         </div>
 

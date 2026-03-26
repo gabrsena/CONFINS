@@ -416,13 +416,13 @@ function MapboxMap({ onInteractionStart, onInteractionEnd, showZoomBar, zoom: sc
       >
         <span 
           className="absolute inset-0 block font-heading text-[100px] md:text-[140px] lg:text-[180px] uppercase text-[#f2cc9d]/10 blur-[8px] translate-x-[2px] translate-y-[-2px]"
-          style={{ fontKerning: 'none', fontVariantLigatures: 'none', letterSpacing: '0.06em' }}
+          style={{ fontKerning: 'none', fontVariantLigatures: 'none', letterSpacing: '-0.03em', textRendering: 'geometricPrecision' }}
         >
           CONFINS
         </span>
         <span 
           className="block font-heading text-[100px] md:text-[140px] lg:text-[180px] uppercase text-[#f5e8d3] [text-shadow:0_10px_35px_rgba(0,0,0,0.38),0_0_20px_rgba(255,245,210,0.08)]"
-          style={{ fontKerning: 'none', fontVariantLigatures: 'none', letterSpacing: '0.06em' }}
+          style={{ fontKerning: 'none', fontVariantLigatures: 'none', letterSpacing: '-0.03em', textRendering: 'geometricPrecision' }}
         >
           CONFINS
         </span>
